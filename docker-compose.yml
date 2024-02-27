@@ -1,0 +1,80 @@
+version: "3"
+
+services: 
+  elasticsearch:
+    container_name: lsc-elastic-search
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    ports:
+      - "${ELASTIC_PORT}:9200"
+    volumes:
+      - certs:/usr/share/elasticsearch/config/certs
+      - data:/usr/share/elasticsearch/data
+    environment:
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - cluster.routing.allocation.disk.threshold_enabled=false # disable disk threshold (https://www.elastic.co/guide/en/elasticsearch/reference/current/disk-allocator.html)
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+      # Change this password for prod
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - KIBANA_PASSWORD=${ELASTIC_PASSWORD}
+  kibana:
+    container_name: lsc-kibana
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    environment:
+      - ELASTICSEARCH_HOST=elasticsearch
+      - ELASTICSEARCH_USERNAME=kibana
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+    ports:
+      - "5601:5601"
+    depends_on:
+      - "elasticsearch"
+  
+  etcd:
+    container_name: lsc-milvus-etcd
+    image: quay.io/coreos/etcd:v3.5.0
+    environment:
+      - ETCD_AUTO_COMPACTION_MODE=revision
+      - ETCD_AUTO_COMPACTION_RETENTION=1000
+      - ETCD_QUOTA_BACKEND_BYTES=4294967296
+      - ETCD_SNAPSHOT_COUNT=50000
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/etcd:/etcd
+    command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
+
+  minio:
+    container_name: lsc-milvus-minio
+    image: minio/minio:RELEASE.2022-03-17T06-34-49Z
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/minio:/minio_data
+    command: minio server /minio_data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  standalone:
+    container_name: lsc-milvus-standalone
+    image: milvusdb/milvus:v2.1.4
+    command: ["milvus", "run", "standalone"]
+    environment:
+      ETCD_ENDPOINTS: etcd:2379
+      MINIO_ADDRESS: minio:9000
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/milvus:/var/lib/milvus
+    ports:
+      - "${MILVUS_PORT}:19530"
+    depends_on:
+      - "etcd"
+      - "minio"
+
+volumes:
+  certs:
+  data:
+
+networks:
+  default:
+    name: milvus

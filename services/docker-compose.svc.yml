@@ -1,0 +1,41 @@
+version: '3.5'
+services:
+  clip:
+    container_name: fact-clip
+    build:
+      context: clip-embedding
+      dockerfile: Dockerfile
+    # env_file: 
+    #   - .env
+    ports:
+     - "${CLIP_PORT}:${CLIP_PORT}"
+    command: ["uvicorn", "main:app", "--reload", "--port", "${CLIP_PORT}", "--host", "0.0.0.0"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['0']
+            capabilities: [gpu]
+  
+  divnoise:
+    container_name: fact-divnoise
+    build:
+      context: div-noise/DivNoise
+      dockerfile: Dockerfile
+    # env_file: 
+    #   - .env
+    ports:
+     - "${DIV_NOISE_PORT}:${DIV_NOISE_PORT}"
+    command: ["uvicorn", "main:app", "--reload", "--port", "${DIV_NOISE_PORT}", "--host", "0.0.0.0"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['0']
+            capabilities: [gpu]
+  
+volumes:
+  certs:
+  data:

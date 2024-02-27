@@ -1,0 +1,17 @@
+version: '3'
+services:
+  clip:
+    container_name: first-clip
+    image: nhtlongcs/first-clip:latest
+    env_file: 
+      - .env
+    ports:
+     - "${CLIP_PORT}:${CLIP_PORT}"
+    command: ["uvicorn", "main:app", "--reload", "--port", "${CLIP_PORT}", "--host", "0.0.0.0"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['0']
+            capabilities: [gpu]

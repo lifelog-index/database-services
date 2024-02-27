@@ -1,0 +1,11 @@
+# Required by CLIP
+ftfy
+regex
+tqdm
+# Required for the server
+fastapi
+python-multipart
+aiofiles
+uvicorn
+# required for testing
+python-dotenv
