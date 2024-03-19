@@ -42,6 +42,22 @@ class ElasticProcessor(Processor):
                 }
         bulk(self.client, index_iterator(df))
         self.client.indices.refresh(index=self.index)
+    
+    def index_json(self, json_file, json_structure):
+
+        self.client.indices.delete(index=self.index, ignore=[400, 404])
+        self.client.indices.create(index=self.index, body=json_structure, ignore=400)
+        self.client.indices.put_settings(index=self.index, body={"index": {"max_result_window": self.max_result_window}})
+
+        def index_iterator(json_file):
+            for k, v in tqdm(json_file.items(), total=len(json_file)):
+                yield {
+                    "_index": self.index,
+                    "_id": k,
+                    "_source": v
+                }
+        bulk(self.client, index_iterator(json_file))
+        self.client.indices.refresh(index=self.index)
         
     def _connect(self):
         es = Elasticsearch([f'http://0.0.0.0:{self.port}'],
