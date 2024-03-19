@@ -1,6 +1,7 @@
 # Required by CLIP
 ftfy
 regex
+Pillow
 tqdm
 # Required for the server
 fastapi
@@ -9,3 +10,4 @@ aiofiles
 uvicorn
 # required for testing
 python-dotenv
+git+https://github.com/openai/CLIP.git
