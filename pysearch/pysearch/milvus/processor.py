@@ -124,14 +124,36 @@ class Milvus2Processor(Processor):
         return True 
     
     def _connect(self):
-        connections.connect(
-            alias="default", 
-            host=self.host,
-            port=self.port,
-        )
         
+        print(f"\nCreate connection...")
+        if not connections.has_connection("default"):
+            # connections.connect(host=self.host, port=self.port)
+            connections.connect(
+                alias="default", 
+                host=self.host,
+                port=self.port,
+            )
+        else:
+            print(f"\ default connection exist:")
+            print(f"\nList connections:")
+            print(connections.list_connections())
+            self.disconnect()
+            connections.connect(
+                alias="default", 
+                host=self.host,
+                port=self.port,
+            )
+            print("Disconnect old and reconnect to new connection")
+
+    
     def kill(self, collection_name):
         utility.drop_collection(collection_name)
+
+    def disconnect(self):
+        connections.disconnect(alias="default")
+    
+    def __del__(self):
+        self.disconnect()
 
     def info(self):
         super().info()

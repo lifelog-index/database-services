@@ -7,7 +7,7 @@ def time_this(func):
         before = datetime.now()
         x = func(*args, **kwargs)
         after = datetime.now()
-        print("Function {} elapsed time: {}".format(func.__name__, after-before))
+        print("[Pysearch] Function {} elapsed time: {}".format(func.__name__, after-before))
         return x
     return calc_time
 

@@ -276,7 +276,14 @@ class ElasticProcessor(Processor):
     
     def info(self):
         super().info()
-        return self.client.indices.get_mapping(index=self.index)[self.index]['mappings']
+        # return mapping and number of documents
+        return {
+            "mapping": self.client.indices.get_mapping(index=self.index)[self.index]['mappings'],
+            "num_documents": self.client.count(index=self.index)['count']
+        }
+
+        # return self.client.indices.get_mapping(index=self.index)[self.index]
+        # return self.client.indices.get_mapping(index=self.index)[self.index]['mappings']
 
     @time_this
     def get_document_by_id(self, ids):
