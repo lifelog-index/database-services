@@ -10,12 +10,14 @@ load_dotenv(dotenv_path=dotenv_path)
 
 CLIP_PORT = os.environ.get("CLIP_PORT", None)
 MILVUS_PORT = os.environ.get("MILVUS_PORT", None)
+CLIP_EMB_DIM = os.environ.get("CLIP_EMB_DIM", None)
 
+assert CLIP_EMB_DIM is not None, "CLIP_EMB_DIM is not set"
 assert CLIP_PORT is not None, "CLIP_PORT is not set"
 assert MILVUS_PORT is not None, "MILVUS_PORT is not set"
 
 from pysearch.milvus import Milvus2Processor as MilvusProcessor
-
+CLIP_EMB_DIM = int(CLIP_EMB_DIM)
 config = {
     # Global config
     "HOST": "0.0.0.0",
@@ -24,8 +26,10 @@ config = {
     "RETURN_SIZE": 10,
     "CACHE_DIR": ".cache/",
     # Milvus config
-    "DIMENSION": 768,
+    "DIMENSION": CLIP_EMB_DIM,
 }
+
+
 def test_index_document():
     """
     Test indexing a list of documents
@@ -45,14 +49,14 @@ def test_index_document():
         ["image10", "image9",.. "image2", "image1"]
     """
     proc = MilvusProcessor(config)
-    features = np.ones((10, 768))
+    features = np.ones((10, CLIP_EMB_DIM))
     features = features * np.arange(10).reshape(-1, 1)
     
     image_names = [f"image{i}" for i in range(10)]
     proc.index_list_document(features, image_names)
 
 def test_search():
-    query = np.ones((1, 768)) * 7
+    query = np.ones((1, CLIP_EMB_DIM)) * 7
     proc = MilvusProcessor(config)
     print(proc.info())
     results = proc.search(query, top_k=10)
@@ -61,9 +65,17 @@ def test_search():
 
 
 def test_search_filter():
-    query = np.ones((1, 768)) * 7
+    query = np.ones((1, CLIP_EMB_DIM)) * 7
     proc = MilvusProcessor(config)
     print(proc.info())
     results = proc.search(query, top_k=10, filter=["image7", "image8", "image9"])
     from pprint import pprint
     pprint(results)
+
+def test_kill_db():
+    proc = MilvusProcessor(config)
+    proc.kill("test_index")
+    proc.disconnect()
+
+if __name__ == "__main__":
+    test_index_document()

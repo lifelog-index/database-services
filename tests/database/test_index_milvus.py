@@ -182,3 +182,4 @@ def test_delete(index_name: str = 'test'):
     )
     collection = Collection(name=index_name)
     collection.drop_index()
+    connections.disconnect(alias="default")
