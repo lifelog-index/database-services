@@ -1,6 +1,21 @@
 version: "3"
 
 services: 
+  clip:
+    container_name: lsc-clip
+    build:
+      context: services/clip-embedding
+      dockerfile: Dockerfile
+    ports:
+      - "${CLIP_PORT}:${CLIP_PORT}"
+    command: ["uvicorn", "main:app", "--reload", "--port", "${CLIP_PORT}", "--host", "0.0.0.0"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['0']
+            capabilities: [gpu]
   elasticsearch:
     container_name: lsc-elastic-search
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
