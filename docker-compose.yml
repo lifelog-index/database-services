@@ -2,7 +2,7 @@ version: "3"
 
 services: 
   clip:
-    container_name: lsc-clip
+    container_name: index-clip
     build:
       context: services/clip-embedding
       dockerfile: Dockerfile
@@ -14,10 +14,10 @@ services:
         reservations:
           devices:
           - driver: nvidia
-            device_ids: ['0']
+            count: 1
             capabilities: [gpu]
   elasticsearch:
-    container_name: lsc-elastic-search
+    container_name: index-elastic-search
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
     ports:
       - "${ELASTIC_PORT}:9200"
@@ -33,7 +33,7 @@ services:
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - KIBANA_PASSWORD=${ELASTIC_PASSWORD}
   kibana:
-    container_name: lsc-kibana
+    container_name: index-kibana
     image: docker.elastic.co/kibana/kibana:8.11.0
     environment:
       - ELASTICSEARCH_HOST=elasticsearch
@@ -45,7 +45,7 @@ services:
       - "elasticsearch"
   
   etcd:
-    container_name: lsc-milvus-etcd
+    container_name: index-milvus-etcd
     image: quay.io/coreos/etcd:v3.5.0
     environment:
       - ETCD_AUTO_COMPACTION_MODE=revision
@@ -57,7 +57,7 @@ services:
     command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
 
   minio:
-    container_name: lsc-milvus-minio
+    container_name: index-milvus-minio
     image: minio/minio:RELEASE.2022-03-17T06-34-49Z
     environment:
       MINIO_ACCESS_KEY: minioadmin
@@ -72,7 +72,7 @@ services:
       retries: 3
 
   standalone:
-    container_name: lsc-milvus-standalone
+    container_name: index-milvus-standalone
     image: milvusdb/milvus:v2.1.4
     command: ["milvus", "run", "standalone"]
     environment:
