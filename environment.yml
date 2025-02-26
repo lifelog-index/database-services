@@ -17,34 +17,34 @@
 name: lsc
 
 channels:
-  - conda-forge
+    - conda-forge
 
 dependencies:
-  # --- retriev feat ---
-  - elasticsearch=7.13.4
-  - elasticsearch-dsl
-  - numpy
-  # --- env management ---
-  - python-dotenv
-  # --- network part ---
-  - protobuf
-  - requests
-  # --- pkg management ---
-  - pip
-  # --- visualize ---
-  - tqdm
-  - notebook
-  - rich
-  - pandas
-  # --- testing ---
-  - pytest
-  - pytest-order
-  # --- web parser ---
-  - Pillow
-  - html5lib
-  - beautifulsoup4
-  - aiohttp
-  - pip:
-      - pymilvus==2.1.0 # compatible with milvus 2.1.0 (which this repo uses)
-      - parsedatetime
-      - -e pysearch # install the package in the current directory
+    # --- retriev feat ---
+    - elasticsearch=7.13.4
+    - elasticsearch-dsl
+    - numpy<2
+    # --- env management ---
+    - python-dotenv
+    # --- network part ---
+    - protobuf
+    - requests
+    # --- pkg management ---
+    - pip
+    # --- visualize ---
+    - tqdm
+    - notebook
+    - rich
+    - pandas
+    # --- testing ---
+    - pytest
+    - pytest-order
+    # --- web parser ---
+    - Pillow
+    - html5lib
+    - beautifulsoup4
+    - aiohttp
+    - pip:
+          - pymilvus==2.1.0 # compatible with milvus 2.1.0 (which this repo uses)
+          - parsedatetime
+          - -e pysearch # install the package in the current directory
