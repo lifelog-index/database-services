@@ -27,7 +27,7 @@ dependencies:
     # --- env management ---
     - python-dotenv
     # --- network part ---
-    - protobuf
+    - protobuf=3.20.*
     - requests
     # --- pkg management ---
     - pip
