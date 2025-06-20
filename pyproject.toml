@@ -1,0 +1,42 @@
+[project]
+name = "database-services"
+version = "0.1.0"
+description = "database services"
+readme = "README.md"
+requires-python = ">=3.9"
+
+dependencies = [
+    "notebook>=7.4.3",
+    "fastapi>=0.115.13",
+    "pydantic>=2.11.7",
+    "uvicorn>=0.34.3",
+    "elasticsearch==7.13.4",
+    "elasticsearch-dsl",
+    "numpy<2",
+    "python-dotenv",
+    "protobuf~=3.20",
+    "requests",
+    "tqdm",
+    "notebook",
+    "rich",
+    "pandas",
+    "pytest",
+    "pytest-order",
+    "Pillow",
+    "html5lib",
+    "beautifulsoup4",
+    "aiohttp",
+    "parsedatetime",
+    "pymilvus==2.1.0",
+    "pysearch",
+]
+
+[tool.setuptools]
+packages = ["pysearch"]
+
+[tool.uv.sources]
+pysearch = { path = "pysearch", editable = true }
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
