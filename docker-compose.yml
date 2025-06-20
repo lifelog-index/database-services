@@ -1,4 +1,30 @@
 services:
+    embedding:
+        container_name: index-clip-embedding
+        image: nhtlongcs/embedding-server:clip-vit-l14-336
+        env_file:
+            - .env
+        ports:
+            - "${CLIP_PORT}:${CLIP_PORT}"
+        command:
+            [
+                "python",
+                "-m",
+                "uvicorn",
+                "main:app",
+                "--reload",
+                "--port",
+                "${CLIP_PORT}",
+                "--host",
+                "0.0.0.0",
+            ]
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                        - driver: nvidia
+                          count: 1
+                          capabilities: [gpu]
     elasticsearch:
         container_name: index-elastic-search
         image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
