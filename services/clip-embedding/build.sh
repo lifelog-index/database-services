@@ -1,1 +1,1 @@
-DOCKER_BUILDKIT=1 docker build -t clip:latest .
+DOCKER_BUILDKIT=1 docker build -t nhtlongcs/embedding-server:clip-vit-l14-336 .
